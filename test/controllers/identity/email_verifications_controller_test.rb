@@ -35,6 +35,7 @@ end
 
 class Identity::EmailVerificationsSignedOutTest < ActionDispatch::IntegrationTest
   setup do
+    Rails.cache.clear
     @user = users(:lazaro_nixon)
     @user.update! verified: false
   end
@@ -58,6 +59,42 @@ class Identity::EmailVerificationsSignedOutTest < ActionDispatch::IntegrationTes
   test "signed-out resend for unknown email sends no mail" do
     assert_no_enqueued_emails do
       post identity_email_verification_url, params: {email: "nobody@example.com"}
+    end
+  end
+
+  test "signed-out resend is throttled after the limit and responds identically" do
+    limit = Identity::EmailVerificationsController::RESEND_LIMIT
+
+    limit.times do
+      post identity_email_verification_url, params: {email: @user.email}
+      assert_redirected_to new_identity_password_reset_url
+      assert_equal "If an account exists for that email, a verification email has been sent", flash[:notice]
+    end
+
+    assert_no_enqueued_emails do
+      post identity_email_verification_url, params: {email: @user.email}
+    end
+
+    # Throttled response is indistinguishable from success (no enumeration leak)
+    assert_redirected_to new_identity_password_reset_url
+    assert_equal "If an account exists for that email, a verification email has been sent", flash[:notice]
+  end
+
+  test "signed-out resend throttle window resets after the window passes" do
+    limit = Identity::EmailVerificationsController::RESEND_LIMIT
+
+    limit.times do
+      post identity_email_verification_url, params: {email: @user.email}
+    end
+
+    assert_no_enqueued_emails do
+      post identity_email_verification_url, params: {email: @user.email}
+    end
+
+    travel Identity::EmailVerificationsController::RESEND_WINDOW
+
+    assert_enqueued_email_with UserMailer, :email_verification, params: {user: @user} do
+      post identity_email_verification_url, params: {email: @user.email}
     end
   end
 end

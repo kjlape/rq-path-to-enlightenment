@@ -31,14 +31,36 @@ class Identity::EmailVerificationsController < ApplicationController
 
   # Signed-out resend (e.g. from the password reset page). Responds
   # identically whether or not the email exists to prevent enumeration.
-  # NOTE: no rate limiting on this endpoint yet — add throttling before
-  # exposing it to production traffic.
+  # Throttled per email + IP; the throttled response is identical to the
+  # success response so the limiter leaks nothing.
   def resend_by_email
-    if (user = User.find_by(email: params[:email])) && !user.verified?
-      send_email_verification(user)
+    unless resend_throttled?
+      if (user = User.find_by(email: params[:email])) && !user.verified?
+        send_email_verification(user)
+      end
     end
     redirect_to new_identity_password_reset_path,
       notice: "If an account exists for that email, a verification email has been sent"
+  end
+
+  RESEND_LIMIT = 3
+  RESEND_WINDOW = 3.minutes
+
+  # Cache-counter throttle (Rails 7.1 has no controller-level rate_limit).
+  # The sliding-window start time is stored with the count (rather than relying
+  # on cache expiry) so the window is exact and testable. Best-effort: a rare
+  # read/write race only allows an extra mail, never blocks legitimate traffic.
+  def resend_throttled?
+    key = "email_verification_resend:#{params[:email].to_s.downcase.strip}:#{request.remote_ip}"
+    now = Time.now.to_i
+    entry = Rails.cache.read(key)
+    if entry.nil? || now - entry[:started_at] >= RESEND_WINDOW
+      Rails.cache.write(key, {count: 1, started_at: now}, expires_in: 2 * RESEND_WINDOW)
+      false
+    else
+      Rails.cache.write(key, {count: entry[:count] + 1, started_at: entry[:started_at]}, expires_in: 2 * RESEND_WINDOW)
+      entry[:count] + 1 > RESEND_LIMIT
+    end
   end
 
   def set_user
