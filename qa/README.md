@@ -15,6 +15,8 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/up   # expect 200
 ```
 
 - `bin/dev` needs foreman (`gem install foreman` — bin/dev auto-installs it on first run). The watcher does an initial build before watching, so first request after boot is fine.
+- **Per-worktree port**: `bin/dev` defaults to `bin/dev-port` — the main checkout gets **3000**, each linked worktree gets a stable port hashed from its path (3001–3999, e.g. `3174`). So parallel QA in multiple worktrees never collides on the port, and each worktree also has its own SQLite DB (`storage/` is gitignored) — full isolation. Override any time with `PORT=4567 bin/dev`.
+- First boot in a fresh worktree: run `bin/rails db:prepare` before `bin/dev` (the worktree's DB starts empty).
 - One-off alternative (no watcher): `bin/rails tailwindcss:build` then `bin/rails server` — but prefer `bin/dev` so CSS changes appear live.
 
 - Rails 7.1, importmap + Tailwind, SQLite dev DB.
