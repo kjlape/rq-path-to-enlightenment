@@ -1,11 +1,50 @@
 import { Controller } from '@hotwired/stimulus'
 import { File, OpenFile, PreopenDirectory, WASI } from '@bjorn3/browser_wasi_shim'
 
+// Matches Minitest's summary line, e.g. "1 runs, 1 assertions, 0 failures, 0 errors, 0 skips".
+// The s? variants are defensive; Minitest itself always uses the plural words.
+const MINITEST_SUMMARY_RE = /(\d+)\s+runs?,\s*(\d+)\s+assertions?,\s*(\d+)\s+failures?,\s*(\d+)\s+errors?,\s*(\d+)\s+skips?/g
+
+// Pure: extract the last Minitest summary line from runner output, or null if none is found.
+export function parseMinitestSummary (output) {
+  const matches = [...String(output).matchAll(MINITEST_SUMMARY_RE)]
+  const last = matches[matches.length - 1]
+  if (!last) return null
+
+  const [, runs, assertions, failures, errors, skips] = last
+  return {
+    runs: Number(runs),
+    assertions: Number(assertions),
+    failures: Number(failures),
+    errors: Number(errors),
+    skips: Number(skips)
+  }
+}
+
+// Pure: given the raw Minitest#run return value and the runner output,
+// decide what verdict the UI should show.
+export function minitestVerdict (resultPassed, output) {
+  const summary = parseMinitestSummary(output)
+
+  // No summary line at all: fall back to the old result-based behavior.
+  if (!summary) return resultPassed ? '✅' : '❌'
+
+  if (summary.runs === 0) return '⚠️ No tests ran'
+  if (summary.failures + summary.errors + summary.skips > 0) return '❌'
+  if (summary.assertions === 0) {
+    const noun = summary.runs === 1 ? 'test' : 'tests'
+    return `⚠️ ${summary.runs} ${noun} ran, but no assertions`
+  }
+
+  return '✅'
+}
+
 export default class extends Controller {
   static targets = ['code', 'output']
 
   async run (event) {
     this.outputTarget.textContent = ''
+    this.runnerOutput = ''
 
     this.vm ||= this.createRubyVM()
 
@@ -15,11 +54,7 @@ export default class extends Controller {
         return e
       })
 
-    if (result.toJS() === true) {
-      this.outputTarget.textContent += '✅'
-    } else {
-      this.outputTarget.textContent += '❌'
-    }
+    this.outputTarget.textContent += minitestVerdict(result.toJS() === true, this.runnerOutput)
   }
 
   get rubyCode () {
@@ -87,10 +122,12 @@ Minitest.parallel_executor = FakeParallelExecutor.new
   }
 
   stdout (str) {
+    this.runnerOutput += str
     this.outputTarget.textContent += str
   }
 
   stderr (str) {
+    this.runnerOutput += str
     this.outputTarget.textContent += str
   }
 
