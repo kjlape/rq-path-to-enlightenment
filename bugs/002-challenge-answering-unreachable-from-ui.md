@@ -41,3 +41,4 @@ The product's stated purpose (journey to Ruby mastery with verifiable challenges
 
 - **Core loop: auto-run.** Tests run automatically with debouncing as the user types (no manual Run→Submit flow in the challenge loop).
 - **"Complete" = passing tests.** A challenge is complete when the tests pass — dashboard completion reflects passing runs, not mere answer existence (already implied in "What done looks like", now confirmed).
+- **Client-side results are trusted (2026-10-18).** The `passed` flag arrives from the browser runner and is not verified server-side; a signed-in user could forge a passing POST. Accepted deliberately: tests run in Ruby WASM in the student's own browser, so the only person a forged result cheats is the forger — they're stubbing their own growth, not gaining anything of value. Progress is private (per bug 001) and unlocks nothing. Revisit only if answers ever gate access, rank users, or drive credentials.
