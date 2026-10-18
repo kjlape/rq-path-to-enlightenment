@@ -1,6 +1,6 @@
 # Bug: First Run of tests gives no feedback while the Ruby VM compiles
 
-**Status:** Open
+**Status:** Fixed — loading indicator, disabled/loading Run button, and idle-time VM warm-up shipped in `minitest_controller.js`.
 **Severity:** Low (perceived breakage)
 **Triage:** Actionable — render "Loading Ruby VM…" into the output target before fetching/instantiating; optionally warm the VM on page load. Zero product risk.
 **Found:** 2026-10-18, browser QA run-through

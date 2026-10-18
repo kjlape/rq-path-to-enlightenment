@@ -2,7 +2,7 @@
   <div class="flex-1 flex-col space-y-2">
     <code-input language="ruby" data-minitest-target="code" class="rounded-lg bg-gray-100"><%= minitest_test_class.full_code %></code-input>
     <div class="my-5">
-      <button data-action="minitest#run" class="rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer">Run</button>
+      <button data-action="minitest#run" data-minitest-target="runButton" class="rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
     </div>
   </div>
   <div class="flex-1 flex-col space-y-2 p-4 overflow-scroll rounded-lg bg-gray-100">
