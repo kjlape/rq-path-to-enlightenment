@@ -2,7 +2,7 @@
 
 **Status:** Open
 **Severity:** High (product-breaking)
-**Triage:** Partially unblocked (bug 001 ownership decided 2026-10-17) — still needs decisions on the intended core loop (auto-run tests on submit vs manual Run→Submit) and what "complete" means (passing tests vs submitted answer). Dashboard semantics and the answer model depend on this.
+**Triage:** Unblocked (bug 001 ownership decided 2026-10-17; core loop and completion decided 2026-10-17, see Decisions below). Dashboard semantics and the answer model follow from these: completion = passing tests, editor auto-runs tests debounced and a passing run is what counts as complete.
 **Found:** 2026-10-18, browser QA run-through
 **Repo:** rq-path-to-enlightenment
 
@@ -33,7 +33,11 @@ The product's stated purpose (journey to Ruby mastery with verifiable challenges
 
 ## What done looks like
 
-- Challenge show embeds the code editor (minitest Stimulus controller) preloaded with the challengeable class code and a Submit button.
-- Submitting runs the tests; only a passing run creates/updates the `challenge_answer` (or stores pass/fail).
+- Challenge show embeds the code editor (minitest Stimulus controller) preloaded with the challengeable class code. Tests auto-run, debounced as the user types; a passing run creates/updates the `challenge_answer`.
 - Dashboard completion reflects passing runs, not mere answer existence.
 - "Challenge" picker on any answer form is a select of the challenges (shared/global curriculum per bug 001's decision), never a numeric ID field.
+
+## Decisions (2026-10-17)
+
+- **Core loop: auto-run.** Tests run automatically with debouncing as the user types (no manual Run→Submit flow in the challenge loop).
+- **"Complete" = passing tests.** A challenge is complete when the tests pass — dashboard completion reflects passing runs, not mere answer existence (already implied in "What done looks like", now confirmed).
