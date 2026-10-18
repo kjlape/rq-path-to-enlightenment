@@ -5,8 +5,6 @@ export default class extends Controller {
   static targets = ['code', 'output']
 
   async run (event) {
-    console.log('running ruby code')
-    console.log(this.rubyCode)
     this.outputTarget.textContent = ''
 
     this.vm ||= this.createRubyVM()
@@ -82,11 +80,7 @@ Minitest.parallel_executor = FakeParallelExecutor.new
 
     wasi.initialize(instance)
     vm.initialize()
-
-    console.log('Setting up Ruby VM…')
-    console.log(this.rubySetupCode)
     vm.eval(this.rubySetupCode)
-    console.log('Ruby VM ready')
     this.outputTarget.textContent = 'Ruby VM ready\n'
 
     return vm

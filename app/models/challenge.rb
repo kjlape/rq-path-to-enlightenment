@@ -6,10 +6,9 @@ class Challenge < ApplicationRecord
   validates :challengeable_type, presence: true, inclusion: {in: %w[MinitestTestClass MinitestTestMethod]}
   accepts_nested_attributes_for :challengeable
 
-  def challengeable_type
-    super || default_challengeable_type.tap do |type|
-      self.challengeable_type = type
-    end
+  def initialize(attributes = nil)
+    super
+    self.challengeable_type ||= default_challengeable_type
   end
 
   def default_challengeable_type

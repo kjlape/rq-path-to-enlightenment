@@ -7,9 +7,7 @@ class TwoFactorAuthentication::Challenge::TotpsController < ApplicationControlle
   end
 
   def create
-    @totp = ROTP::TOTP.new(@user.otp_secret, issuer: "YourAppName")
-
-    if @totp.verify(params[:code], drift_behind: 15)
+    if @user.totp.verify(params[:code], drift_behind: 15)
       sign_in_and_redirect_to_root
     else
       redirect_to new_two_factor_authentication_challenge_totp_path, alert: "That code didn't work. Please try again"

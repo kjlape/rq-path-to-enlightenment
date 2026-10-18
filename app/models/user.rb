@@ -30,14 +30,22 @@ class User < ApplicationRecord
     sessions.where.not(id: Current.session).delete_all
   end
 
+  # Percentage of all challenges the user has submitted an answer for.
   def overall_completion
-    # TODO: Implement actual calculation
-    50.0 # Returning a stub value of 50%
+    total = Challenge.count
+    return 0.0 if total.zero?
+
+    answered = challenge_answers.select(:challenge_id).distinct.count
+    (answered * 100.0 / total).round(1)
   end
 
+  # Journeys the user has started, i.e. submitted at least one answer in.
   def journeys
-    # TODO: Implement actual association with user's journeys
-    Journey.all # Returning all journeys as a stub
+    Journey.joins(challenges: :challenge_answers).where(challenge_answers: {user_id: id}).distinct
+  end
+
+  def totp
+    ROTP::TOTP.new(otp_secret, issuer: "RubyPathToEnlightenment")
   end
 
   def username

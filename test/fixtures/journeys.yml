@@ -7,3 +7,7 @@ one:
 two:
   title: MyString
   description: MyText
+
+empty:
+  title: Empty
+  description: MyText

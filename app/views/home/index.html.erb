@@ -23,10 +23,10 @@
         <% Current.user.journeys.each do |journey| %>
           <div class="bg-white overflow-hidden shadow rounded-lg">
             <div class="px-4 py-5 sm:p-6">
-              <dt class="text-sm font-medium text-gray-500 truncate"><%= journey.name %></dt>
-              <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= number_to_percentage(journey.completion_percentage, precision: 0) %></dd>
+              <dt class="text-sm font-medium text-gray-500 truncate"><%= journey.title %></dt>
+              <dd class="mt-1 text-3xl font-semibold text-gray-900"><%= number_to_percentage(journey.completion_percentage(Current.user), precision: 0) %></dd>
               <div class="mt-2 w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= journey.completion_percentage %>%"></div>
+                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= journey.completion_percentage(Current.user) %>%"></div>
               </div>
             </div>
           </div>

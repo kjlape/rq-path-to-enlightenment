@@ -3,14 +3,14 @@ class Journey < ApplicationRecord
 
   validates :title, presence: true
 
-  def name
-    # TODO: Implement actual name logic
-    "Journey #{id}"
-  end
+  # Percentage of this journey's challenges the user has submitted an answer for.
+  def completion_percentage(user)
+    total = challenges.count
+    return 0 if total.zero?
 
-  def completion_percentage
-    # TODO: Implement actual completion percentage calculation
-    @completion_percentage ||= rand(0..100) # Returning a random percentage as a stub
+    answered = user.challenge_answers.where(challenge_id: challenge_ids)
+      .select(:challenge_id).distinct.count
+    (answered * 100.0 / total).round
   end
 
   def self.new_from_minitest_test_class(record)

@@ -1,13 +1,12 @@
 class TwoFactorAuthentication::Profile::TotpsController < ApplicationController
   before_action :set_user
-  before_action :set_totp, only: %i[new create]
 
   def new
-    @qr_code = RQRCode::QRCode.new(provisioning_uri)
+    @qr_code = RQRCode::QRCode.new(@user.totp.provisioning_uri(@user.email))
   end
 
   def create
-    if @totp.verify(params[:code], drift_behind: 15)
+    if @user.totp.verify(params[:code], drift_behind: 15)
       @user.update! otp_required_for_sign_in: true
       redirect_to two_factor_authentication_profile_recovery_codes_path
     else
@@ -24,13 +23,5 @@ class TwoFactorAuthentication::Profile::TotpsController < ApplicationController
 
   def set_user
     @user = Current.user
-  end
-
-  def set_totp
-    @totp = ROTP::TOTP.new(@user.otp_secret, issuer: "YourAppName")
-  end
-
-  def provisioning_uri
-    @totp.provisioning_uri @user.email
   end
 end

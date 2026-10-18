@@ -15,11 +15,6 @@ class JourneysController < ApplicationController
     @journey = Journey.new
   end
 
-  # GET /journeys/1/edit
-  def edit
-    @journey = Journey.includes(:challenges).find(params[:id])
-  end
-
   # POST /journeys or /journeys.json
   def create
     @journey = Journey.new(journey_params)
