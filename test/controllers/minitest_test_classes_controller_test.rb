@@ -70,4 +70,25 @@ class MinitestTestClassesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to minitest_test_classes_url
   end
+  test "non-admin cannot create minitest_test_class" do
+    sign_in_as users(:one)
+    assert_no_difference("MinitestTestClass.count") do
+      post minitest_test_classes_url, params: { minitest_test_class: {title: "x", description: "y"}}
+    end
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot edit minitest_test_class" do
+    sign_in_as users(:one)
+    get edit_minitest_test_class_url(minitest_test_classes(:one))
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot destroy minitest_test_class" do
+    sign_in_as users(:one)
+    assert_no_difference("MinitestTestClass.count") do
+      delete minitest_test_class_url(minitest_test_classes(:one))
+    end
+    assert_redirected_to root_url
+  end
 end

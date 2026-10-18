@@ -46,4 +46,25 @@ class JourneysControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to journeys_url
   end
+  test "non-admin cannot create journey" do
+    sign_in_as users(:one)
+    assert_no_difference("Journey.count") do
+      post journeys_url, params: { journey: {title: "x", description: "y"}}
+    end
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot edit journey" do
+    sign_in_as users(:one)
+    get edit_journey_url(journeys(:one))
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot destroy journey" do
+    sign_in_as users(:one)
+    assert_no_difference("Journey.count") do
+      delete journey_url(journeys(:one))
+    end
+    assert_redirected_to root_url
+  end
 end

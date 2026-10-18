@@ -58,4 +58,25 @@ class ChallengesControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to journey_challenges_url(@journey)
   end
+  test "non-admin cannot create challenge" do
+    sign_in_as users(:one)
+    assert_no_difference("Challenge.count") do
+      post journey_challenges_url(@journey), params: { challenge: {title: "x", description: "y"}}
+    end
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot edit challenge" do
+    sign_in_as users(:one)
+    get edit_challenge_url(challenges(:one))
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot destroy challenge" do
+    sign_in_as users(:one)
+    assert_no_difference("Challenge.count") do
+      delete challenge_url(challenges(:one))
+    end
+    assert_redirected_to root_url
+  end
 end

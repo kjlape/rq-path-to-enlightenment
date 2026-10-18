@@ -24,4 +24,10 @@ class ApplicationController < ActionController::Base
       redirect_to new_sessions_sudo_path(proceed_to_url: request.original_url)
     end
   end
+
+  def require_admin
+    unless Current.user&.admin?
+      redirect_to root_url, alert: "You are not authorized to modify content."
+    end
+  end
 end

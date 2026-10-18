@@ -48,6 +48,7 @@ class User < ApplicationRecord
     ROTP::TOTP.new(otp_secret, issuer: "RubyPathToEnlightenment")
   end
 
+
   def username
     email.split("@").first
   end

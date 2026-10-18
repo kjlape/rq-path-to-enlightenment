@@ -1,5 +1,6 @@
 class MinitestTestClassesController < ApplicationController
   before_action :set_minitest_test_class, only: %i[show edit update destroy]
+  before_action :require_admin, only: %i[new create edit update destroy]
 
   # GET /minitest_test_classes or /minitest_test_classes.json
   def index

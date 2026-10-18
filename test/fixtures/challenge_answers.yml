@@ -4,6 +4,6 @@ one:
   submitted_code: MyText
 
 two:
-  user: lazaro_nixon
+  user: one
   challenge: two
-  submitted_code: MyText
+  submitted_code: OtherUsersCode

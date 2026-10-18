@@ -1,5 +1,6 @@
 class JourneysController < ApplicationController
   before_action :set_journey, only: %i[show edit update destroy]
+  before_action :require_admin, only: %i[new create edit update destroy]
 
   # GET /journeys or /journeys.json
   def index

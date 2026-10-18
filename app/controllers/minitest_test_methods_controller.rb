@@ -2,6 +2,7 @@ class MinitestTestMethodsController < ApplicationController
   before_action :set_minitest_test_class, only: %i[index new create]
   before_action :set_minitest_test_method, only: %i[show edit update destroy]
   before_action :set_parent_minitest_test_class, only: %i[edit update]
+  before_action :require_admin, only: %i[new create edit update destroy]
 
   # GET /minitest_test_methods or /minitest_test_methods.json
   def index

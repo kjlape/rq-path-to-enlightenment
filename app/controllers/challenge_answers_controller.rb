@@ -3,7 +3,7 @@ class ChallengeAnswersController < ApplicationController
 
   # GET /challenge_answers or /challenge_answers.json
   def index
-    @challenge_answers = ChallengeAnswer.all
+    @challenge_answers = Current.user.challenge_answers
   end
 
   # GET /challenge_answers/1 or /challenge_answers/1.json
@@ -61,7 +61,7 @@ class ChallengeAnswersController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_challenge_answer
-    @challenge_answer = ChallengeAnswer.find(params[:id])
+    @challenge_answer = Current.user.challenge_answers.find(params[:id])
   end
 
   # Only allow a list of trusted parameters through. The user is set from the
