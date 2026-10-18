@@ -10,18 +10,7 @@
   </p>
 
   <p class="my-5">
-    <strong class="block font-medium mb-1">Position:</strong>
-    <%= challenge.position %>
-  </p>
-
-  <p class="my-5">
     <strong class="block font-medium mb-1">Journey:</strong>
-    <%= challenge.journey_id %>
+    <%= link_to challenge.journey.title, journey_path(challenge.journey), class: "text-blue-600 hover:text-blue-800" %>
   </p>
-
-  <p class="my-5">
-    <strong class="block font-medium mb-1">Challengeable:</strong>
-    <%= challenge.challengeable_id %>
-  </p>
-
 </div>

@@ -3,14 +3,15 @@ class Journey < ApplicationRecord
 
   validates :title, presence: true
 
-  # Percentage of this journey's challenges the user has submitted an answer for.
+  # Percentage of this journey's challenges the user has a passing answer for.
   def completion_percentage(user)
     total = challenges.count
     return 0 if total.zero?
 
-    answered = user.challenge_answers.where(challenge_id: challenge_ids)
-      .select(:challenge_id).distinct.count
-    (answered * 100.0 / total).round
+    # The unique (user_id, challenge_id) index guarantees one row per pair,
+    # so a plain count of passing answers is the passed-challenge count.
+    passed = user.challenge_answers.where(challenge_id: challenge_ids, passed: true).count
+    (passed * 100.0 / total).round
   end
 
   def self.new_from_minitest_test_class(record)

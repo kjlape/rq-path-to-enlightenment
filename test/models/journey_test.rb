@@ -14,20 +14,20 @@ class JourneyTest < ActiveSupport::TestCase
     assert_equal 0, Journey.create!(title: "Empty").completion_percentage(@user)
   end
 
-  test "completion_percentage reflects the user's answered challenges" do
-    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x")
+  test "completion_percentage reflects the user's passing answers" do
+    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x", passed: true)
 
     assert_equal 50, @journey.completion_percentage(@user)
   end
 
-  test "completion_percentage counts distinct answered challenges only once" do
-    2.times { |i| ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "v#{i}") }
+  test "completion_percentage ignores non-passing answers" do
+    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x", passed: false)
 
-    assert_equal 50, @journey.completion_percentage(@user)
+    assert_equal 0, @journey.completion_percentage(@user)
   end
 
-  test "completion_percentage is 100 when everything is answered" do
-    @challenges.each { |c| ChallengeAnswer.create!(user: @user, challenge: c, submitted_code: "x") }
+  test "completion_percentage is 100 when everything is passed" do
+    @challenges.each { |c| ChallengeAnswer.create!(user: @user, challenge: c, submitted_code: "x", passed: true) }
 
     assert_equal 100, @journey.completion_percentage(@user)
   end

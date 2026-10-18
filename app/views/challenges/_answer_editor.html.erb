@@ -1,0 +1,17 @@
+<%# Editor + test runner for answering a challenge. Tests auto-run (debounced)
+    as the user types; a passing run submits the answer via ChallengeAnswersController. %>
+<div class="sm:flex sm:space-x-4 mt-6" data-controller="minitest"
+     data-minitest-autorun-value="true"
+     data-minitest-answer-url-value="<%= challenge_answers_path(format: :json) %>"
+     data-minitest-challenge-id-value="<%= challenge.id %>">
+  <div class="flex-1 flex-col space-y-2">
+    <code-input language="ruby" data-minitest-target="code" class="rounded-lg bg-gray-100"><%= initial_code %></code-input>
+    <div class="my-5 flex items-center space-x-2">
+      <button data-action="minitest#run" data-minitest-target="runButton" class="rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Run</button>
+      <span data-minitest-target="status" class="text-sm font-medium text-gray-500" hidden></span>
+    </div>
+  </div>
+  <div class="flex-1 flex-col space-y-2 p-4 overflow-scroll rounded-lg bg-gray-100">
+    <pre data-minitest-target="output"></pre>
+  </div>
+</div>

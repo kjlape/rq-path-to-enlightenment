@@ -30,13 +30,13 @@ class User < ApplicationRecord
     sessions.where.not(id: Current.session).delete_all
   end
 
-  # Percentage of all challenges the user has submitted an answer for.
+  # Percentage of all challenges the user has a passing answer for.
   def overall_completion
     total = Challenge.count
     return 0.0 if total.zero?
 
-    answered = challenge_answers.select(:challenge_id).distinct.count
-    (answered * 100.0 / total).round(1)
+    passed = challenge_answers.where(passed: true).count
+    (passed * 100.0 / total).round(1)
   end
 
   # Journeys the user has started, i.e. submitted at least one answer in.

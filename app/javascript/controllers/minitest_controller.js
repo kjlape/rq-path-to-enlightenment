@@ -73,14 +73,16 @@ async function importUMD (url, module = { exports: {} }) {
 
 export default class extends Controller {
   static targets = ['code', 'output', 'status', 'runButton']
-  static values = { saveUrl: String }
+  static values = { saveUrl: String, answerUrl: String, challengeId: Number, autorun: Boolean }
 
   connect () {
     this.vm = null
     this.vmReady = false
     this.running = false
     this.spinnerTimer = null
+    this.saving = false
     this.warmInTheBackground()
+    this.connectAutorun()
 
     if (!this.hasSaveUrlValue) return
 
@@ -104,6 +106,7 @@ export default class extends Controller {
 
   disconnect () {
     this.stopSpinner()
+    this.disconnectAutorun()
 
     if (!this.hasSaveUrlValue) return
 
@@ -137,15 +140,91 @@ export default class extends Controller {
           return e
         })
 
-      this.outputTarget.textContent += minitestVerdict(result.toJS() === true, this.runnerOutput)
+      const verdict = minitestVerdict(result.toJS() === true, this.runnerOutput)
+      this.outputTarget.textContent += verdict
+      if (verdict === '✅' && this.hasAnswerUrlValue) await this.saveAnswer()
     } catch (error) {
       this.stopSpinner()
       this.outputTarget.textContent = `Failed to load Ruby VM: ${error}`
       this.vm = null
       this.vmReady = false
+      this.autorunQueued = false
     } finally {
       this.running = false
       this.setButtonsBusy(false)
+      this.runFinished()
+    }
+  }
+
+  // Debounced auto-run for the challenge editor: tests re-run as the user
+  // types, and a passing run submits the answer.
+  connectAutorun () {
+    if (!this.autorunValue || !this.hasAnswerUrlValue) return
+
+    this.handleAutoInput = () => {
+      clearTimeout(this.autorunTimer)
+      this.autorunTimer = setTimeout(() => {
+        // run() guards against overlapping runs; if one is in flight, try
+        // again when it finishes.
+        if (this.running) {
+          this.autorunQueued = true
+        } else {
+          this.run()
+        }
+      }, 750)
+    }
+    this.codeTarget.addEventListener('input', this.handleAutoInput)
+  }
+
+  disconnectAutorun () {
+    if (!this.handleAutoInput) return
+
+    clearTimeout(this.autorunTimer)
+    this.codeTarget.removeEventListener('input', this.handleAutoInput)
+  }
+
+  runFinished () {
+    if (this.autorunQueued && !this.running) {
+      this.autorunQueued = false
+      this.run()
+    }
+  }
+
+  // Shared JSON transport for save() and saveAnswer(); callers own the
+  // status messaging. Throws on a non-OK response.
+  async submitJson (method, url, payload) {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) throw new Error((await this.errorMessage(response)) || 'Request failed')
+    return response
+  }
+
+  async saveAnswer () {
+    if (this.savingAnswer) return
+    this.savingAnswer = true
+    this.showStatus('Submitting answer…')
+
+    try {
+      await this.submitJson('POST', this.answerUrlValue, {
+        challenge_answer: {
+          challenge_id: this.challengeIdValue,
+          submitted_code: this.currentCode,
+          passed: true
+        }
+      })
+      this.showStatus('✅ Tests passed — answer saved')
+    } catch {
+      this.showStatus('Could not save answer', true)
+    } finally {
+      this.savingAnswer = false
     }
   }
 
@@ -156,27 +235,14 @@ export default class extends Controller {
     this.showStatus('Saving…')
 
     try {
-      const response = await fetch(this.saveUrlValue, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
-        },
-        body: JSON.stringify({ minitest_test_class: { code } })
-      })
-
-      if (response.ok) {
-        this.savedCode = code
-        this.showStatus('Saved')
-        setTimeout(() => {
-          if (!this.dirty) this.hideStatus()
-        }, 2500)
-      } else {
-        this.showStatus((await this.errorMessage(response)) || 'Could not save', true)
-      }
-    } catch {
-      this.showStatus('Could not save', true)
+      await this.submitJson('PATCH', this.saveUrlValue, {minitest_test_class: {code}})
+      this.savedCode = code
+      this.showStatus('Saved')
+      setTimeout(() => {
+        if (!this.dirty) this.hideStatus()
+      }, 2500)
+    } catch (error) {
+      this.showStatus(error.message || 'Could not save', true)
     } finally {
       this.saving = false
     }
