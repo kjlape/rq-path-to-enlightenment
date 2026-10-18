@@ -1,6 +1,6 @@
 # Bug: No content authorization — any user can edit or delete any content
 
-**Status:** Fixed (branch fix/001-content-authorization)
+**Status:** Fixed (2026-10-18, merged to master)
 **Severity:** High (for a multi-user deployment) / Low (single-user or pre-launch)
 **Triage:** Decision made 2026-10-17 — shared curriculum, private progress (see Decision below). Ready to implement.
 **Found:** 2026-10-18, during a whole-repo deslop pass
