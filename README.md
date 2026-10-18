@@ -1,5 +1,8 @@
 # README
 
+> **⚠️ This repo is superseded by [RailsQuest/learn](https://github.com/RailsQuest/learn).**
+> It will be archived once the final commits land here. New work belongs in the successor repo.
+
 This README would normally document whatever steps are necessary to get the
 application up and running.
 
