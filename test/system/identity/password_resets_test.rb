@@ -9,8 +9,15 @@ class Identity::PasswordResetsTest < ApplicationSystemTestCase
   test "sending a password reset email" do
     visit sign_in_url
     click_on "Forgot your password?"
+    # The click returns while Turbo is still navigating; the sign-in page also
+    # has an "Email" field, so wait for the reset page to render before filling.
+    assert_selector "h1", text: "Forgot your password?"
 
     fill_in "Email", with: @user.email
+    # Guard against the Turbo submit racing the fill: without this, a click
+    # that lands before the fill's change event submits an empty email and
+    # bounces back to the form with the flash already consumed.
+    assert_field "Email", with: @user.email
     click_on "Send password reset email"
 
     assert_text "Check your email for reset instructions"

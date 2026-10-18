@@ -3,6 +3,7 @@ require "application_system_test_case"
 class MinitestTestClassesTest < ApplicationSystemTestCase
   setup do
     @minitest_test_class = minitest_test_classes(:one)
+    sign_in_as users(:lazaro_nixon)
   end
 
   test "visiting the index" do

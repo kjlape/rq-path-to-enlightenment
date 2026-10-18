@@ -3,6 +3,7 @@ require "application_system_test_case"
 class JourneysTest < ApplicationSystemTestCase
   setup do
     @journey = journeys(:one)
+    sign_in_as users(:lazaro_nixon)
   end
 
   test "visiting the index" do
@@ -14,8 +15,8 @@ class JourneysTest < ApplicationSystemTestCase
     visit journeys_url
     click_on "New journey"
 
-    fill_in "Description", with: @journey.description
     fill_in "Title", with: @journey.title
+    fill_in "Description", with: @journey.description
     click_on "Create Journey"
 
     assert_text "Journey was successfully created"
@@ -26,8 +27,8 @@ class JourneysTest < ApplicationSystemTestCase
     visit journey_url(@journey)
     click_on "Edit this journey", match: :first
 
-    fill_in "Description", with: @journey.description
     fill_in "Title", with: @journey.title
+    fill_in "Description", with: @journey.description
     click_on "Update Journey"
 
     assert_text "Journey was successfully updated"
@@ -36,7 +37,9 @@ class JourneysTest < ApplicationSystemTestCase
 
   test "should destroy Journey" do
     visit journey_url(@journey)
-    click_on "Destroy this journey", match: :first
+
+    # The destroy button renders a native confirm dialog via Turbo.
+    accept_confirm { click_on "Destroy this journey" }
 
     assert_text "Journey was successfully destroyed"
   end
