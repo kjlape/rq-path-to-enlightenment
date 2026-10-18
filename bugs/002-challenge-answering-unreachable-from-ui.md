@@ -2,6 +2,7 @@
 
 **Status:** Open
 **Severity:** High (product-breaking)
+**Triage:** Needs product-owner input — requires decisions on the intended core loop (auto-run tests on submit vs manual Run→Submit) and what "complete" means (passing tests vs submitted answer). Dashboard semantics and the answer model depend on this; decide together with bug 001.
 **Found:** 2026-10-18, browser QA run-through
 **Repo:** rq-path-to-enlightenment
 

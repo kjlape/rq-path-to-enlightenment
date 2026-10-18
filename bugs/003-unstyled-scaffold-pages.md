@@ -2,6 +2,7 @@
 
 **Status:** Open
 **Severity:** Medium (polish/cohesion)
+**Triage:** Needs product-owner input — needs a style/design direction (or explicit "scaffold is fine for now"). Agents should not invent branding; fixing functionally broken pages is fine, restyling wholesale is not.
 **Found:** 2026-10-18, browser QA run-through
 
 ## Summary

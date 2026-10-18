@@ -2,6 +2,7 @@
 
 **Status:** Open
 **Severity:** Low (perceived breakage)
+**Triage:** Actionable — render "Loading Ruby VM…" into the output target before fetching/instantiating; optionally warm the VM on page load. Zero product risk.
 **Found:** 2026-10-18, browser QA run-through
 
 ## Summary

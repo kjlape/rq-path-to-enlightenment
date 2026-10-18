@@ -114,6 +114,7 @@ Rules of thumb:
 - **Verify before filing.** Reproduce twice; rule out harness gotchas (§3). For "it didn't save" claims, check the server log for the request and the DB via `bin/rails runner` — never infer success/failure from redirects alone.
 - One bug per file. Include a repro that starts from a fresh account where possible.
 - High = breaks the product's core loop or loses data. Medium = misleading behavior, dead ends, real UX harm. Low = polish, feedback, perception.
+- Every bug file carries a `**Triage:**` line: either "Actionable" (safe to fix directly — the criteria are in the file) or "Needs product-owner input" (a design/ownership/behavior decision gates the fix; don't code it). Keep this field current when decisions land.
 - Don't file styling complaints unless a page is functionally broken — but do file "two design languages" style cohesion gaps once (see bugs/003).
 
 ## 7. Known open bugs (as of 2026-10-18)

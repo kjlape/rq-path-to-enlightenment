@@ -2,6 +2,7 @@
 
 **Status:** Open
 **Severity:** Medium (data loss for users)
+**Triage:** Actionable — preferred fix: explicit Save action (PATCH the class/method body) plus beforeunload warning; acceptable alternative: read-only editor. Either resolves the data loss.
 **Found:** 2026-10-18, browser QA run-through
 
 ## Summary

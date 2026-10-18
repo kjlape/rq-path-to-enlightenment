@@ -2,6 +2,7 @@
 
 **Status:** Open
 **Severity:** High (for a multi-user deployment) / Low (single-user or pre-launch)
+**Triage:** Needs product-owner input — the fix depends on the ownership model (shared curriculum / per-user / admin-managed). Do not code until decided.
 **Found:** 2026-10-18, during a whole-repo deslop pass
 **Repo:** rq-path-to-enlightenment
 

@@ -2,6 +2,7 @@
 
 **Status:** Open
 **Severity:** Medium (misleading feedback for a learning app)
+**Triage:** Actionable — parse the Minitest summary from stdout; ✅ only when runs > 0 and failures/errors/skips == 0; "⚠️ No tests ran" otherwise. Clear acceptance criteria, no decisions needed.
 **Found:** 2026-10-18, browser QA run-through
 
 ## Summary
