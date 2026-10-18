@@ -20,8 +20,12 @@ class ChallengeAnswersController < ApplicationController
   end
 
   # POST /challenge_answers or /challenge_answers.json
+  # Upserts: there is one answer per (user, challenge), so a new run that
+  # passes updates the existing answer instead of creating a duplicate.
   def create
-    @challenge_answer = Current.user.challenge_answers.new(challenge_answer_params)
+    @challenge_answer = Current.user.challenge_answers
+      .find_or_initialize_by(challenge_id: challenge_answer_params[:challenge_id])
+    @challenge_answer.assign_attributes(challenge_answer_params)
 
     respond_to do |format|
       if @challenge_answer.save
@@ -37,7 +41,9 @@ class ChallengeAnswersController < ApplicationController
   # PATCH/PUT /challenge_answers/1 or /challenge_answers/1.json
   def update
     respond_to do |format|
-      if @challenge_answer.update(challenge_answer_params)
+      # Edits to submitted code never un-pass a challenge; only a new
+      # passing run (create/upsert) flips `passed` back or forth.
+      if @challenge_answer.update(challenge_answer_params.except(:passed))
         format.html { redirect_to challenge_answer_url(@challenge_answer), notice: "Challenge answer was successfully updated." }
         format.json { render :show, status: :ok, location: @challenge_answer }
       else
@@ -64,9 +70,8 @@ class ChallengeAnswersController < ApplicationController
     @challenge_answer = ChallengeAnswer.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through. The user is set from the
-  # current session, never from params.
+  # The user is set from the current session, never from params.
   def challenge_answer_params
-    params.require(:challenge_answer).permit(:challenge_id, :submitted_code)
+    params.require(:challenge_answer).permit(:challenge_id, :submitted_code, :passed)
   end
 end

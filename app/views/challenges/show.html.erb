@@ -13,3 +13,9 @@
     </div>
   </div>
 </div>
+
+<% if @answer&.passed? %>
+  <p class="mx-auto md:w-2/3 w-full mt-4 py-2 px-3 bg-green-50 text-green-600 font-medium rounded-lg inline-block">✅ Completed — your last run passed</p>
+<% end %>
+
+<%= render "answer_editor", challenge: @challenge, initial_code: @answer&.submitted_code.presence || @challenge.challenge_code %>

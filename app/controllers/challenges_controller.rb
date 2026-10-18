@@ -8,8 +8,7 @@ class ChallengesController < ApplicationController
   end
 
   def show
-    @minitest_test_class = @challenge.challengeable
-    @minitest_test_methods = @minitest_test_class.minitest_test_methods
+    @answer = Current.user.challenge_answers.find_by(challenge: @challenge)
   end
 
   def new

@@ -15,7 +15,7 @@ class ChallengeAnswersTest < ApplicationSystemTestCase
     visit challenge_answers_url
     click_on "New challenge answer"
 
-    fill_in "Challenge", with: @challenge_answer.challenge_id
+    find("#challenge_answer_challenge_id").find("option[value='#{@challenge_answer.challenge_id}']").select_option
     fill_in "Submitted code", with: @challenge_answer.submitted_code
     click_on "Create Challenge answer"
 
@@ -27,7 +27,7 @@ class ChallengeAnswersTest < ApplicationSystemTestCase
     visit challenge_answer_url(@challenge_answer)
     click_on "Edit this challenge answer", match: :first
 
-    fill_in "Challenge", with: @challenge_answer.challenge_id
+    find("#challenge_answer_challenge_id").find("option[value='#{@challenge_answer.challenge_id}']").select_option
     fill_in "Submitted code", with: @challenge_answer.submitted_code
     click_on "Update Challenge answer"
 

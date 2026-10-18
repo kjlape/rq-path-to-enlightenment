@@ -73,14 +73,16 @@ async function importUMD (url, module = { exports: {} }) {
 
 export default class extends Controller {
   static targets = ['code', 'output', 'status', 'runButton']
-  static values = { saveUrl: String }
+  static values = { saveUrl: String, answerUrl: String, challengeId: Number, autorun: Boolean }
 
   connect () {
     this.vm = null
     this.vmReady = false
     this.running = false
     this.spinnerTimer = null
+    this.saving = false
     this.warmInTheBackground()
+    this.connectAutorun()
 
     if (!this.hasSaveUrlValue) return
 
@@ -104,6 +106,7 @@ export default class extends Controller {
 
   disconnect () {
     this.stopSpinner()
+    this.disconnectAutorun()
 
     if (!this.hasSaveUrlValue) return
 
@@ -137,15 +140,87 @@ export default class extends Controller {
           return e
         })
 
-      this.outputTarget.textContent += minitestVerdict(result.toJS() === true, this.runnerOutput)
+      const verdict = minitestVerdict(result.toJS() === true, this.runnerOutput)
+      this.outputTarget.textContent += verdict
+      if (verdict === '✅' && this.hasAnswerUrlValue) await this.saveAnswer()
     } catch (error) {
       this.stopSpinner()
       this.outputTarget.textContent = `Failed to load Ruby VM: ${error}`
       this.vm = null
       this.vmReady = false
+      this.autorunQueued = false
     } finally {
       this.running = false
       this.setButtonsBusy(false)
+      this.runFinished()
+    }
+  }
+
+  // Debounced auto-run for the challenge editor: tests re-run as the user
+  // types, and a passing run submits the answer.
+  connectAutorun () {
+    if (!this.autorunValue || !this.hasAnswerUrlValue) return
+
+    this.handleAutoInput = () => {
+      clearTimeout(this.autorunTimer)
+      this.autorunTimer = setTimeout(() => {
+        // run() guards against overlapping runs; if one is in flight, try
+        // again when it finishes.
+        if (this.running) {
+          this.autorunQueued = true
+        } else {
+          this.run()
+        }
+      }, 750)
+    }
+    this.codeTarget.addEventListener('input', this.handleAutoInput)
+  }
+
+  disconnectAutorun () {
+    if (!this.handleAutoInput) return
+
+    clearTimeout(this.autorunTimer)
+    this.codeTarget.removeEventListener('input', this.handleAutoInput)
+  }
+
+  async runFinished () {
+    if (this.autorunQueued && !this.running) {
+      this.autorunQueued = false
+      this.run()
+    }
+  }
+
+  async saveAnswer () {
+    if (this.savingAnswer) return
+    this.savingAnswer = true
+    this.showStatus('Submitting answer…')
+
+    try {
+      const response = await fetch(this.answerUrlValue, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
+        },
+        body: JSON.stringify({
+          challenge_answer: {
+            challenge_id: this.challengeIdValue,
+            submitted_code: this.currentCode,
+            passed: true
+          }
+        })
+      })
+
+      if (response.ok) {
+        this.showStatus('✅ Tests passed — answer saved')
+      } else {
+        this.showStatus((await this.errorMessage(response)) || 'Could not save answer', true)
+      }
+    } catch {
+      this.showStatus('Could not save answer', true)
+    } finally {
+      this.savingAnswer = false
     }
   }
 

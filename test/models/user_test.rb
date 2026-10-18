@@ -16,17 +16,18 @@ class UserTest < ActiveSupport::TestCase
     assert_equal 0.0, @user.overall_completion
   end
 
-  test "overall_completion is the answered share of all challenges" do
+  test "overall_completion counts only passing answers" do
     ChallengeAnswer.delete_all
-    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x")
+    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x", passed: false)
+    ChallengeAnswer.create!(user: @user, challenge: @challenges.second, submitted_code: "y", passed: true)
 
-    # 1 of every challenge (fixtures + the 2 created in setup)
+    # fixtures carry two non-passing answers; only 1 passed of every challenge
     assert_equal (100.0 / Challenge.count).round(1), @user.overall_completion
   end
 
   test "journeys returns only journeys the user has answered in" do
     ChallengeAnswer.delete_all
-    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x")
+    ChallengeAnswer.create!(user: @user, challenge: @challenges.first, submitted_code: "x", passed: true)
 
     assert_equal [@journey.id], @user.journeys.map(&:id)
   end
