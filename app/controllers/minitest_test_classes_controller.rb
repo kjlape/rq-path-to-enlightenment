@@ -36,8 +36,14 @@ class MinitestTestClassesController < ApplicationController
 
   # PATCH/PUT /minitest_test_classes/1 or /minitest_test_classes/1.json
   def update
+    saved = if (code = minitest_test_class_params[:code]).present?
+      @minitest_test_class.update_from_code(code)
+    else
+      @minitest_test_class.update(minitest_test_class_params.except(:code))
+    end
+
     respond_to do |format|
-      if @minitest_test_class.update(minitest_test_class_params)
+      if saved
         format.html { redirect_to minitest_test_class_url(@minitest_test_class), notice: "Minitest test class was successfully updated." }
         format.json { render :show, status: :ok, location: @minitest_test_class }
       else
@@ -64,8 +70,10 @@ class MinitestTestClassesController < ApplicationController
     @minitest_test_class = MinitestTestClass.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
+  # Only allow a list of trusted parameters through. +code+ carries the edited
+  # class source from the code editor and is handled by update_from_code, never
+  # assigned as a plain attribute.
   def minitest_test_class_params
-    params.require(:minitest_test_class).permit(:class_name)
+    params.require(:minitest_test_class).permit(:class_name, :code)
   end
 end
