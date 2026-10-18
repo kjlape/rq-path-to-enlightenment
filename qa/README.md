@@ -6,16 +6,20 @@ How to run a full QA pass on this app: setup, driving it with a real browser, kn
 
 ```bash
 bin/rails db:prepare                                  # set up / migrate dev DB
-bin/rails tailwindcss:build                           # generate app/assets/builds/tailwind.css if missing —
-                                                      # without it every layout render 500s with
-                                                      # "The asset 'tailwind.css' was not found in the load path"
-nohup bin/rails server -p 3000 > tmp/qa-server.log 2>&1 &
+nohup bin/dev > tmp/qa-server.log 2>&1 &              # foreman: rails server + tailwind watcher
+                                                      # DO NOT use `bin/rails server` — the Tailwind build
+                                                      # output is gitignored (app/assets/builds/*) and only
+                                                      # `bin/dev`'s watcher builds it; without it every layout
+                                                      # render 500s with "The asset 'tailwind.css' was not found"
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/up   # expect 200
 ```
 
+- `bin/dev` needs foreman (`gem install foreman` — bin/dev auto-installs it on first run). The watcher does an initial build before watching, so first request after boot is fine.
+- One-off alternative (no watcher): `bin/rails tailwindcss:build` then `bin/rails server` — but prefer `bin/dev` so CSS changes appear live.
+
 - Rails 7.1, importmap + Tailwind, SQLite dev DB.
 - Server log lands in `tmp/qa-server.log` — grep it when a click "does nothing" to see if a request was even received.
-- Teardown when done: `agent-browser close`, then kill the server process.
+- Teardown when done: `agent-browser close`, then kill the `bin/dev`/foreman process group (`pkill -f foreman` or kill the PID).
 
 ### Fresh state
 
