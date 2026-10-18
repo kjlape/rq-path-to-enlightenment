@@ -1,6 +1,6 @@
 # Bug: "Method created" flash is never visible — rendered inside a Turbo Frame
 
-**Status:** Open
+**Status:** Fixed (merged to master)
 **Severity:** Low (feedback/perception)
 **Triage:** Actionable — small view fix; no product decisions needed.
 **Found:** 2026-10-18, during the bug 008 system-suite fix (test worked around it by asserting persistence instead of the flash)

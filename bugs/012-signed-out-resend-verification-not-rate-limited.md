@@ -1,6 +1,6 @@
 # Bug: Signed-out resend-verification endpoint has no rate limiting
 
-**Status:** Open
+**Status:** Fixed (merged to master)
 **Severity:** Medium (before public/production traffic) — mail-bombing / abuse vector
 **Triage:** Actionable — mechanical fix (rate-limit the endpoint); no product decisions needed.
 **Found:** 2026-10-18, verification of the bug 009 fix (the fix itself carries a comment acknowledging this)

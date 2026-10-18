@@ -1,6 +1,6 @@
 # Bug: Test-class parser still rejects `?`/`!`/`=`-suffixed test method names
 
-**Status:** Open
+**Status:** Fixed (merged to master)
 **Severity:** Low (rare names; failure is loud — 422, never data loss)
 **Triage:** Actionable — extend the regex and round-trip handling; no product decisions needed.
 **Found:** 2026-10-18, verification of the bug 010 fix (noted as out of scope there)
