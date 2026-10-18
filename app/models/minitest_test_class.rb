@@ -4,9 +4,9 @@ class MinitestTestClass < ApplicationRecord
 
   CLASS_HEADER = /\A\s*class\s+(?<class_name>[A-Z]\w*)\s*<\s*Minitest::Test\s*\z/
   CLASS_END = /\A\s*end\s*\z/
-  METHOD_DEFINITION = /\A(?<indent>\s*)def\s+(?<method_name>test_[a-z_]+)\s*(?:\(\s*\))?\s*\z/
+  METHOD_DEFINITION = /\A(?<indent>\s*)def\s+(?<method_name>test_[a-zA-Z0-9_]+)\s*(?:\(\s*\))?\s*\z/
 
-  has_many :minitest_test_methods, dependent: :destroy
+  has_many :minitest_test_methods, -> { order(:position) }, dependent: :destroy
   validates :class_name, presence: true, format: {with: /\A[A-Z][a-zA-Z]*\z/}
 
   def full_code(methods: minitest_test_methods)
@@ -33,9 +33,9 @@ class MinitestTestClass < ApplicationRecord
     self.class.transaction do
       update!(class_name: parsed[:class_name])
 
-      kept_ids = parsed[:methods].map do |attributes|
+      kept_ids = parsed[:methods].each_with_index.map do |attributes, index|
         minitest_test_methods.find_or_initialize_by(method_name: attributes[:method_name]).tap do |method|
-          method.update!(attributes)
+          method.update!(attributes.merge(position: index))
         end.id
       end
 

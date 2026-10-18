@@ -1,6 +1,6 @@
 # Bug: Test-class code parser rejects valid test names and loses method ordering on save
 
-**Status:** Open
+**Status:** Fixed
 **Severity:** Low (usability limits of the bug 006 Save feature; failures are loud, never data loss)
 **Triage:** Actionable — tighten the parser regex and persist explicit method ordering. No product decisions needed.
 **Found:** 2026-10-18, reviewer finding during the bug 006 fix

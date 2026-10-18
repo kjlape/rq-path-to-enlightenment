@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_08_032800) do
+ActiveRecord::Schema[7.1].define(version: 2026_10_18_000000) do
   create_table "challenge_answers", force: :cascade do |t|
     t.integer "user_id", null: false
     t.integer "challenge_id", null: false
@@ -53,6 +53,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_08_032800) do
     t.integer "minitest_test_class_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position", null: false
     t.index ["minitest_test_class_id"], name: "index_minitest_test_methods_on_minitest_test_class_id"
   end
 
