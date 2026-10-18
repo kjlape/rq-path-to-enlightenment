@@ -18,13 +18,14 @@ class Challenge < ApplicationRecord
   validates :title, presence: true
   validates :description, presence: true
   validates :position, presence: true, numericality: {only_integer: true, greater_than_or_equal_to: 0}
-
   def challenge_code
-    if challengeable.is_a?(MinitestTestMethod)
-      challengeable.full_code_with_class
-    else
-      challengeable.full_code
-    end
+    challengeable.challenge_code
+  end
+
+  # What the editor starts from: the user's last submission, or the pristine
+  # challenge source if they have not submitted one.
+  def starter_code(answer = nil)
+    answer&.submitted_code.presence || challenge_code
   end
 
   def self.new_from_minitest_test_method(record, journey:, position:)

@@ -35,7 +35,7 @@ class User < ApplicationRecord
     total = Challenge.count
     return 0.0 if total.zero?
 
-    passed = challenge_answers.where(passed: true).select(:challenge_id).distinct.count
+    passed = challenge_answers.where(passed: true).count
     (passed * 100.0 / total).round(1)
   end
 

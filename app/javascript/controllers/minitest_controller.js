@@ -183,11 +183,28 @@ export default class extends Controller {
     this.codeTarget.removeEventListener('input', this.handleAutoInput)
   }
 
-  async runFinished () {
+  runFinished () {
     if (this.autorunQueued && !this.running) {
       this.autorunQueued = false
       this.run()
     }
+  }
+
+  // Shared JSON transport for save() and saveAnswer(); callers own the
+  // status messaging. Throws on a non-OK response.
+  async submitJson (method, url, payload) {
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
+      },
+      body: JSON.stringify(payload)
+    })
+
+    if (!response.ok) throw new Error((await this.errorMessage(response)) || 'Request failed')
+    return response
   }
 
   async saveAnswer () {
@@ -196,27 +213,14 @@ export default class extends Controller {
     this.showStatus('Submitting answer…')
 
     try {
-      const response = await fetch(this.answerUrlValue, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
-        },
-        body: JSON.stringify({
-          challenge_answer: {
-            challenge_id: this.challengeIdValue,
-            submitted_code: this.currentCode,
-            passed: true
-          }
-        })
+      await this.submitJson('POST', this.answerUrlValue, {
+        challenge_answer: {
+          challenge_id: this.challengeIdValue,
+          submitted_code: this.currentCode,
+          passed: true
+        }
       })
-
-      if (response.ok) {
-        this.showStatus('✅ Tests passed — answer saved')
-      } else {
-        this.showStatus((await this.errorMessage(response)) || 'Could not save answer', true)
-      }
+      this.showStatus('✅ Tests passed — answer saved')
     } catch {
       this.showStatus('Could not save answer', true)
     } finally {
@@ -231,27 +235,14 @@ export default class extends Controller {
     this.showStatus('Saving…')
 
     try {
-      const response = await fetch(this.saveUrlValue, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
-        },
-        body: JSON.stringify({ minitest_test_class: { code } })
-      })
-
-      if (response.ok) {
-        this.savedCode = code
-        this.showStatus('Saved')
-        setTimeout(() => {
-          if (!this.dirty) this.hideStatus()
-        }, 2500)
-      } else {
-        this.showStatus((await this.errorMessage(response)) || 'Could not save', true)
-      }
-    } catch {
-      this.showStatus('Could not save', true)
+      await this.submitJson('PATCH', this.saveUrlValue, {minitest_test_class: {code}})
+      this.savedCode = code
+      this.showStatus('Saved')
+      setTimeout(() => {
+        if (!this.dirty) this.hideStatus()
+      }, 2500)
+    } catch (error) {
+      this.showStatus(error.message || 'Could not save', true)
     } finally {
       this.saving = false
     }

@@ -19,4 +19,8 @@ class MinitestTestMethod < ApplicationRecord
     minitest_test_class.full_code(methods: [self])
   end
 
+  def challenge_code
+    full_code_with_class
+  end
+
 end

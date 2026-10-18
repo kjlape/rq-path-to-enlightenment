@@ -8,8 +8,9 @@ class Journey < ApplicationRecord
     total = challenges.count
     return 0 if total.zero?
 
-    passed = user.challenge_answers.where(challenge_id: challenge_ids, passed: true)
-      .select(:challenge_id).distinct.count
+    # The unique (user_id, challenge_id) index guarantees one row per pair,
+    # so a plain count of passing answers is the passed-challenge count.
+    passed = user.challenge_answers.where(challenge_id: challenge_ids, passed: true).count
     (passed * 100.0 / total).round
   end
 
