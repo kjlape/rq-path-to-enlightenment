@@ -4,6 +4,19 @@ lazaro_nixon:
   email: lazaronixon@hotmail.com
   password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
   verified: true
+  admin: true
+  otp_secret: "JZ3XK6ZQJZ3XK6ZQ"
+
+one:
+  email: one@example.com
+  password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
+  verified: true
+  otp_secret: "JZ3XK6ZQJZ3XK6ZQ"
+
+two:
+  email: two@example.com
+  password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
+  verified: true
   otp_secret: "JZ3XK6ZQJZ3XK6ZQ"
 
 unverified_user:

@@ -47,4 +47,25 @@ class MinitestTestMethodsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to minitest_test_class_url(@minitest_test_method.minitest_test_class)
   end
+  test "non-admin cannot create minitest_test_method" do
+    sign_in_as users(:one)
+    assert_no_difference("MinitestTestMethod.count") do
+      post minitest_test_class_minitest_test_methods_url(@minitest_test_class), params: { minitest_test_method: {method_name: "test_x", method_body: "x"}}
+    end
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot edit minitest_test_method" do
+    sign_in_as users(:one)
+    get edit_minitest_test_method_url(minitest_test_methods(:one))
+    assert_redirected_to root_url
+  end
+
+  test "non-admin cannot destroy minitest_test_method" do
+    sign_in_as users(:one)
+    assert_no_difference("MinitestTestMethod.count") do
+      delete minitest_test_method_url(minitest_test_methods(:one))
+    end
+    assert_redirected_to root_url
+  end
 end

@@ -2,6 +2,7 @@ class ChallengesController < ApplicationController
   before_action :set_journey, only: [:index, :new, :create]
   before_action :set_challenge, only: [:show, :edit, :update, :destroy]
   before_action :set_journey_from_challenge, only: [:update, :destroy]
+  before_action :require_admin, only: [:new, :create, :edit, :update, :destroy]
 
   def index
     @challenges = @journey.challenges.order(:position)

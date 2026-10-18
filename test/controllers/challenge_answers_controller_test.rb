@@ -66,4 +66,41 @@ class ChallengeAnswersControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to challenge_answers_url
   end
+
+  test "index lists only the current user's answers" do
+    get challenge_answers_url
+    assert_response :success
+    assert_no_match(/OtherUsersCode/, @response.body)
+  end
+
+  test "cannot show another user's answer" do
+    get challenge_answer_url(challenge_answers(:two))
+    assert_response :not_found
+  end
+
+  test "cannot edit another user's answer" do
+    get edit_challenge_answer_url(challenge_answers(:two))
+    assert_response :not_found
+  end
+
+  test "cannot update another user's answer" do
+    patch challenge_answer_url(challenge_answers(:two)), params: {challenge_answer: {submitted_code: "hacked"}}
+    assert_response :not_found
+    assert_equal "OtherUsersCode", challenge_answers(:two).reload.submitted_code
+  end
+
+  test "cannot destroy another user's answer" do
+    assert_no_difference("ChallengeAnswer.count") do
+      delete challenge_answer_url(challenge_answers(:two))
+    end
+    assert_response :not_found
+  end
+
+  test "create ignores user_id and assigns the current user" do
+    assert_difference("ChallengeAnswer.count") do
+      post challenge_answers_url, params: {challenge_answer: {challenge_id: challenges(:one).id, submitted_code: "puts 1", user_id: users(:one).id}}
+    end
+
+    assert_equal users(:lazaro_nixon), ChallengeAnswer.last.user
+  end
 end
