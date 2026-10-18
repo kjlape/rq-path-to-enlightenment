@@ -2,7 +2,7 @@
 
 **Status:** Open
 **Severity:** High (for a multi-user deployment) / Low (single-user or pre-launch)
-**Triage:** Needs product-owner input — the fix depends on the ownership model (shared curriculum / per-user / admin-managed). Do not code until decided.
+**Triage:** Decision made 2026-10-17 — shared curriculum, private progress (see Decision below). Ready to implement.
 **Found:** 2026-10-18, during a whole-repo deslop pass
 **Repo:** rq-path-to-enlightenment
 
@@ -33,15 +33,29 @@ Not exploitable pre-authentication (the `authenticate` before_action covers thes
 
 ## What done looks like
 
-- A decision on the ownership model: are journeys/challenges per-user, shared curriculum (admin-authored), or copy-on-start?
+- ~~A decision on the ownership model~~ — made: shared curriculum, private progress (see Decision).
 - `user_id` (or equivalent) added via migration wherever ownership applies, backfilled for existing rows.
 - Controllers scope every lookup through the current user (e.g. `Current.user.journeys.find(params[:id])`) and the index actions list only the user's own records.
 - Tests asserting a second user gets 404 (not 200) on another user's show/edit/update/destroy.
 - JSON endpoints (`*.json.jbuilder`) covered by the same scoping.
 
+## Decision (2026-10-17)
+
+**Shared courses, admin edit only; private progress.** Journeys, challenges, and minitest test classes/methods are global, admin-authored content: readable by all signed-in users, editable/destroyable only by admins. Only `challenge_answers` is per-user private progress.
+
+Consequences for implementation:
+
+- Add an admin role/flag on users (e.g. `users.admin: boolean`); only admins reach the write actions on the four content controllers.
+- Non-admin users get read-only access to content; write actions redirect/404.
+- No `user_id` on content tables — they stay global. Backfill/admin bootstrap is limited to granting the first admin.
+- Scope `ChallengeAnswersController` entirely through `Current.user.challenge_answers` (index, show, edit, update, destroy) — this is the user-data exposure and applies regardless of role.
+- Update bug 002's answer-form work to assume a global challenge picker (all challenges visible to everyone).
+
+Open follow-up (does not block this fix): how admins are promoted (seed, first-user, UI) — pick the simplest (seed/rake task) unless decided otherwise.
+
 ## Suggested direction
 
-The app reads as a solo learning tool today (one curriculum, progress per user). Two plausible shapes:
+The decision above selects shape 1.
 
 1. **Shared curriculum, private progress (recommended):** journeys/challenges/minitests become read-only global content (or admin-managed); only `challenge_answers` is per-user. Scope `ChallengeAnswersController` to `Current.user.challenge_answers` and drop/lock down the write actions on the content controllers.
 2. **Per-user content:** add `user_id` to the content tables, scope every controller through `Current.user`, keep the current CRUD.

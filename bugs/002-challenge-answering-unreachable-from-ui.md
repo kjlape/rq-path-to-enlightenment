@@ -2,7 +2,7 @@
 
 **Status:** Open
 **Severity:** High (product-breaking)
-**Triage:** Needs product-owner input — requires decisions on the intended core loop (auto-run tests on submit vs manual Run→Submit) and what "complete" means (passing tests vs submitted answer). Dashboard semantics and the answer model depend on this; decide together with bug 001.
+**Triage:** Partially unblocked (bug 001 ownership decided 2026-10-17) — still needs decisions on the intended core loop (auto-run tests on submit vs manual Run→Submit) and what "complete" means (passing tests vs submitted answer). Dashboard semantics and the answer model depend on this.
 **Found:** 2026-10-18, browser QA run-through
 **Repo:** rq-path-to-enlightenment
 
@@ -36,4 +36,4 @@ The product's stated purpose (journey to Ruby mastery with verifiable challenges
 - Challenge show embeds the code editor (minitest Stimulus controller) preloaded with the challengeable class code and a Submit button.
 - Submitting runs the tests; only a passing run creates/updates the `challenge_answer` (or stores pass/fail).
 - Dashboard completion reflects passing runs, not mere answer existence.
-- "Challenge" picker on any answer form is a select of the user's challenges, never a numeric ID field.
+- "Challenge" picker on any answer form is a select of the challenges (shared/global curriculum per bug 001's decision), never a numeric ID field.
