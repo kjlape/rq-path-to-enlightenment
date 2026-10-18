@@ -69,6 +69,14 @@ Rails.application.configure do
   # Annotate rendered view with file names.
   # config.action_view.annotate_rendered_view_with_filenames = true
 
+  # Allow access via the machine's bare hostname (e.g. http://zion:3000 from
+  # other devices on the LAN). Bare hostnames lack dots, so Rails blocks them
+  # by default as a DNS rebinding protection measure.
+  # Allow access via the machine's bare hostname (e.g. http://zion:3000 from
+  # other devices on the LAN). Bare hostnames lack dots, so Rails blocks them
+  # by default as a DNS rebinding protection measure.
+  config.hosts << "zion"
+
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
 
