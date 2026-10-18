@@ -1,6 +1,6 @@
 # Bug: Code edits in the Tests list editor are silently lost
 
-**Status:** Open
+**Status:** Fixed — explicit Save button next to Run (PATCHes the class update endpoint with the edited code, which is parsed back into the class name + method records), beforeunload/Turbo-navigation warning while dirty, and a Saved confirmation
 **Severity:** Medium (data loss for users)
 **Triage:** Actionable — preferred fix: explicit Save action (PATCH the class/method body) plus beforeunload warning; acceptable alternative: read-only editor. Either resolves the data loss.
 **Found:** 2026-10-18, browser QA run-through

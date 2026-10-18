@@ -39,6 +39,30 @@ class MinitestTestClassesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to minitest_test_class_url(@minitest_test_class)
   end
 
+  test "should update minitest_test_class from edited code" do
+    @minitest_test_class.minitest_test_methods.create!(method_name: "push", method_body: "assert true")
+
+    patch minitest_test_class_url(@minitest_test_class), as: :json,
+      params: {minitest_test_class: {code: <<~RUBY}}
+        class MyString < Minitest::Test
+          def test_push
+            assert_equal 2, 1 + 1
+          end
+        end
+      RUBY
+
+    assert_response :ok
+    assert_equal "assert_equal 2, 1 + 1", @minitest_test_class.minitest_test_methods.find_by!(method_name: "push").reload.method_body
+  end
+
+  test "should not update minitest_test_class from unrecognizable code" do
+    patch minitest_test_class_url(@minitest_test_class), as: :json,
+      params: {minitest_test_class: {code: "puts 'hello'"}}
+
+    assert_response :unprocessable_entity
+    assert_equal "MyString", @minitest_test_class.reload.class_name
+  end
+
   test "should destroy minitest_test_class" do
     assert_difference("MinitestTestClass.count", -1) do
       delete minitest_test_class_url(@minitest_test_class)

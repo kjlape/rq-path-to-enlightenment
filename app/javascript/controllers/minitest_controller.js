@@ -2,7 +2,37 @@ import { Controller } from '@hotwired/stimulus'
 import { File, OpenFile, PreopenDirectory, WASI } from '@bjorn3/browser_wasi_shim'
 
 export default class extends Controller {
-  static targets = ['code', 'output']
+  static targets = ['code', 'output', 'status']
+  static values = { saveUrl: String }
+
+  connect () {
+    if (!this.hasSaveUrlValue) return
+
+    this.savedCode = this.currentCode
+    this.handleInput = () => this.refreshStatus()
+    this.handleBeforeUnload = (event) => {
+      if (this.dirty) {
+        event.preventDefault()
+        event.returnValue = '' // required for Chrome to show the dialog
+      }
+    }
+    this.handleTurboBeforeVisit = (event) => {
+      if (this.dirty && !window.confirm('You have unsaved changes. Leave anyway?')) {
+        event.preventDefault()
+      }
+    }
+    this.codeTarget.addEventListener('input', this.handleInput)
+    window.addEventListener('beforeunload', this.handleBeforeUnload)
+    document.addEventListener('turbo:before-visit', this.handleTurboBeforeVisit)
+  }
+
+  disconnect () {
+    if (!this.hasSaveUrlValue) return
+
+    this.codeTarget.removeEventListener('input', this.handleInput)
+    window.removeEventListener('beforeunload', this.handleBeforeUnload)
+    document.removeEventListener('turbo:before-visit', this.handleTurboBeforeVisit)
+  }
 
   async run (event) {
     this.outputTarget.textContent = ''
@@ -19,6 +49,75 @@ export default class extends Controller {
       this.outputTarget.textContent += '✅'
     } else {
       this.outputTarget.textContent += '❌'
+    }
+  }
+
+  async save (event) {
+    if (!this.hasSaveUrlValue || this.saving) return
+    this.saving = true
+    const code = this.currentCode
+    this.showStatus('Saving…')
+
+    try {
+      const response = await fetch(this.saveUrlValue, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
+        },
+        body: JSON.stringify({ minitest_test_class: { code } })
+      })
+
+      if (response.ok) {
+        this.savedCode = code
+        this.showStatus('Saved')
+        setTimeout(() => {
+          if (!this.dirty) this.hideStatus()
+        }, 2500)
+      } else {
+        this.showStatus((await this.errorMessage(response)) || 'Could not save', true)
+      }
+    } catch {
+      this.showStatus('Could not save', true)
+    } finally {
+      this.saving = false
+    }
+  }
+
+  get currentCode () {
+    return this.codeTarget.value || this.codeTarget.textContent
+  }
+
+  get dirty () {
+    return this.hasSaveUrlValue && this.currentCode !== this.savedCode
+  }
+
+  refreshStatus () {
+    if (this.dirty) {
+      this.showStatus('Unsaved changes')
+    } else {
+      this.hideStatus()
+    }
+  }
+
+  showStatus (message, isError = false) {
+    this.statusTarget.textContent = message
+    this.statusTarget.classList.toggle('text-red-500', isError)
+    this.statusTarget.classList.toggle('text-gray-500', !isError)
+    this.statusTarget.hidden = false
+  }
+
+  hideStatus () {
+    this.statusTarget.textContent = ''
+    this.statusTarget.hidden = true
+  }
+
+  async errorMessage (response) {
+    try {
+      return Object.values(await response.json()).flat()[0]
+    } catch {
+      return null
     }
   }
 

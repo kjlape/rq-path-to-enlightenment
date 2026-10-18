@@ -1,8 +1,10 @@
-<div class="sm:flex sm:space-x-4" data-controller="minitest" id="<%= dom_id minitest_test_class %>">
+<div class="sm:flex sm:space-x-4" data-controller="minitest" data-minitest-save-url-value="<%= minitest_test_class_path(minitest_test_class) %>" id="<%= dom_id minitest_test_class %>">
   <div class="flex-1 flex-col space-y-2">
     <code-input language="ruby" data-minitest-target="code" class="rounded-lg bg-gray-100"><%= minitest_test_class.full_code %></code-input>
-    <div class="my-5">
+    <div class="my-5 flex items-center space-x-2">
       <button data-action="minitest#run" class="rounded-lg py-3 px-5 bg-blue-600 text-white inline-block font-medium cursor-pointer">Run</button>
+      <button data-action="minitest#save" class="rounded-lg py-3 px-5 bg-green-600 text-white inline-block font-medium cursor-pointer">Save</button>
+      <span data-minitest-target="status" class="text-sm font-medium text-gray-500" hidden></span>
     </div>
   </div>
   <div class="flex-1 flex-col space-y-2 p-4 overflow-scroll rounded-lg bg-gray-100">
