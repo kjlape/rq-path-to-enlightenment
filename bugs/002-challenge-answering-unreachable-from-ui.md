@@ -1,6 +1,6 @@
 # Bug: The core loop is a dead end — challenges can't be answered from the UI
 
-**Status:** Open
+**Status:** Fixed (2026-10-18, merged via `fix/002-challenge-answerable-from-ui`)
 **Severity:** High (product-breaking)
 **Triage:** Unblocked (bug 001 ownership decided 2026-10-17; core loop and completion decided 2026-10-17, see Decisions below). Dashboard semantics and the answer model follow from these: completion = passing tests, editor auto-runs tests debounced and a passing run is what counts as complete.
 **Found:** 2026-10-18, browser QA run-through
