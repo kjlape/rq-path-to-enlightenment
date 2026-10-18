@@ -1,0 +1,12 @@
+<div class="border-b border-indigo-200 bg-indigo-50">
+  <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm text-indigo-700">
+        <span class="font-medium">Verify your email.</span>
+        We sent a verification link to <span class="font-medium"><%= Current.user.email %></span>.
+        You can't reset your password until you verify your email.
+      </p>
+      <%= button_to "Resend verification email", identity_email_verification_path, class: "inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+    </div>
+  </div>
+</div>
