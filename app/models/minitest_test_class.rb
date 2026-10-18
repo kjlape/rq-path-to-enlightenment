@@ -4,7 +4,7 @@ class MinitestTestClass < ApplicationRecord
 
   CLASS_HEADER = /\A\s*class\s+(?<class_name>[A-Z]\w*)\s*<\s*Minitest::Test\s*\z/
   CLASS_END = /\A\s*end\s*\z/
-  METHOD_DEFINITION = /\A(?<indent>\s*)def\s+(?<method_name>test_[a-zA-Z0-9_]+)\s*(?:\(\s*\))?\s*\z/
+  METHOD_DEFINITION = /\A(?<indent>\s*)def\s+(?<method_name>test_[a-zA-Z0-9_]+[?!=]?)\s*(?:\(\s*\))?\s*\z/
 
   has_many :minitest_test_methods, -> { order(:position) }, dependent: :destroy
   validates :class_name, presence: true, format: {with: /\A[A-Z][a-zA-Z]*\z/}

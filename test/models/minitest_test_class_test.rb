@@ -89,6 +89,47 @@ class MinitestTestClassTest < ActiveSupport::TestCase
     assert_equal "returns_2_items", minitest_test_class.minitest_test_methods.find_by!(method_name: "returns_2_items").method_name
   end
 
+  test "update_from_code round-trips ?/!/= suffixed test names" do
+    minitest_test_class = MinitestTestClass.create!(class_name: "StackTest")
+
+    code = <<~RUBY
+      class StackTest < Minitest::Test
+        def test_even?
+          assert true
+        end
+
+        def test_empty!
+          assert true
+        end
+
+        def test_size=
+          assert true
+        end
+      end
+    RUBY
+
+    assert minitest_test_class.update_from_code(code)
+    round_tripped = minitest_test_class.reload.full_code
+    assert minitest_test_class.update_from_code(round_tripped)
+    assert_equal round_tripped, minitest_test_class.reload.full_code
+    assert_equal %w[even? empty! size=], minitest_test_class.minitest_test_methods.order(:position).pluck(:method_name)
+  end
+
+  test "update_from_code still rejects unparseable code with suffixed method names" do
+    minitest_test_class = MinitestTestClass.create!(class_name: "StackTest")
+
+    code = <<~RUBY
+      class StackTest < Minitest::Test
+        def even?
+          assert true
+        end
+      end
+    RUBY
+
+    assert_not minitest_test_class.update_from_code(code)
+    assert minitest_test_class.errors.any?
+  end
+
   test "update_from_code preserves reordered methods" do
     minitest_test_class = MinitestTestClass.create!(class_name: "StackTest")
     minitest_test_class.minitest_test_methods.create!(method_name: "push", method_body: "assert true")
