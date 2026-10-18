@@ -5,3 +5,9 @@ lazaro_nixon:
   password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
   verified: true
   otp_secret: "JZ3XK6ZQJZ3XK6ZQ"
+
+unverified_user:
+  email: unverified@example.com
+  password_digest: <%= BCrypt::Password.create("Secret1*3*5*") %>
+  verified: false
+  otp_secret: "K4M2N4P6R8T0V2X4"

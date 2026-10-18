@@ -1,4 +1,6 @@
 class Identity::PasswordResetsController < ApplicationController
+  UNVERIFIED_EMAIL_ALERT = "You can't reset your password until you verify your email"
+
   skip_before_action :authenticate
 
   before_action :set_user, only: %i[edit update]
@@ -14,7 +16,7 @@ class Identity::PasswordResetsController < ApplicationController
       send_password_reset_email
       redirect_to sign_in_path, notice: "Check your email for reset instructions"
     else
-      redirect_to new_identity_password_reset_path, alert: "You can't reset your password until you verify your email"
+      redirect_to new_identity_password_reset_path, alert: UNVERIFIED_EMAIL_ALERT
     end
   end
 

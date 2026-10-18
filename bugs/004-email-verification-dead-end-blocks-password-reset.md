@@ -1,6 +1,6 @@
 # Bug: Email verification is a dead end in development — password reset permanently blocked
 
-**Status:** Open
+**Status:** Fixed (2026-10-18 — letter_opener in dev, unverified-email banner with resend, reset-blocked page links to resend)
 **Severity:** Medium (dev/onboarding UX)
 **Triage:** Actionable — mechanical fix: letter_opener (or logged verification URL) in dev, unverified-email banner with resend, and link the reset-blocked error to the resend action. No decisions needed.
 **Found:** 2026-10-18, browser QA run-through
