@@ -1,4 +1,4 @@
-<%= form_with(model: (minitest_test_method.persisted? ? minitest_test_method : [minitest_test_class, minitest_test_method]), class: "contents") do |form| %>
+<%= form_with(model: (minitest_test_method.persisted? ? minitest_test_method : [minitest_test_class, minitest_test_method]), class: "contents", data: { turbo_frame: "_top" }) do |form| %>
   <% if minitest_test_method.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-lg mt-3">
       <h2><%= pluralize(minitest_test_method.errors.count, "error") %> prohibited this minitest_test_method from being saved:</h2>
