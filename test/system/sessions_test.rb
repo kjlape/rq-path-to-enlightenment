@@ -8,7 +8,9 @@ class SessionsTest < ApplicationSystemTestCase
   test "visiting the index" do
     sign_in_as @user
 
+    visit settings_url
     click_on "Devices & Sessions"
+
     assert_selector "h1", text: "Sessions"
   end
 
@@ -24,7 +26,11 @@ class SessionsTest < ApplicationSystemTestCase
   test "signing out" do
     sign_in_as @user
 
+    # "Log out" lives on the settings page (the layout's copy sits inside the
+    # hidden profile dropdown). The settings page has exactly one, always visible.
+    visit settings_url
     click_on "Log out"
+
     assert_text "That session has been logged out"
   end
 end

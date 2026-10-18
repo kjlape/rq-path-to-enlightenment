@@ -3,23 +3,23 @@ require "application_system_test_case"
 class ChallengesTest < ApplicationSystemTestCase
   setup do
     @challenge = challenges(:one)
+    @journey = journeys(:one)
+    sign_in_as users(:lazaro_nixon)
   end
 
   test "visiting the index" do
-    visit challenges_url
+    visit journey_challenges_url(@journey)
     assert_selector "h1", text: "Challenges"
   end
 
   test "should create challenge" do
-    visit challenges_url
+    visit journey_challenges_url(@journey)
     click_on "New challenge"
 
-    fill_in "Challengeable", with: @challenge.challengeable_id
-    fill_in "Challengeable type", with: @challenge.challengeable_type
-    fill_in "Description", with: @challenge.description
-    fill_in "Journey", with: @challenge.journey_id
-    fill_in "Position", with: @challenge.position
     fill_in "Title", with: @challenge.title
+    fill_in "Description", with: @challenge.description
+    fill_in "Position", with: @challenge.position
+    fill_in "Class name", with: @challenge.challengeable.class_name
     click_on "Create Challenge"
 
     assert_text "Challenge was successfully created"
@@ -30,12 +30,10 @@ class ChallengesTest < ApplicationSystemTestCase
     visit challenge_url(@challenge)
     click_on "Edit this challenge", match: :first
 
-    fill_in "Challengeable", with: @challenge.challengeable_id
-    fill_in "Challengeable type", with: @challenge.challengeable_type
-    fill_in "Description", with: @challenge.description
-    fill_in "Journey", with: @challenge.journey_id
-    fill_in "Position", with: @challenge.position
     fill_in "Title", with: @challenge.title
+    fill_in "Description", with: @challenge.description
+    fill_in "Position", with: @challenge.position
+    fill_in "Class name", with: @challenge.challengeable.class_name
     click_on "Update Challenge"
 
     assert_text "Challenge was successfully updated"
