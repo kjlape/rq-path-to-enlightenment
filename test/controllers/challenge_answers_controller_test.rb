@@ -97,8 +97,11 @@ class ChallengeAnswersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create ignores user_id and assigns the current user" do
+    fresh = Challenge.create!(journey: journeys(:one), title: "Fresh", description: "d", position: 2,
+      challengeable: MinitestTestClass.create!(class_name: "FreshTest"))
+
     assert_difference("ChallengeAnswer.count") do
-      post challenge_answers_url, params: {challenge_answer: {challenge_id: challenges(:one).id, submitted_code: "puts 1", user_id: users(:one).id}}
+      post challenge_answers_url, params: {challenge_answer: {challenge_id: fresh.id, submitted_code: "puts 1", user_id: users(:one).id}}
     end
 
     assert_equal users(:lazaro_nixon), ChallengeAnswer.last.user
