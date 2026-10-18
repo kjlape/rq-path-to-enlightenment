@@ -5,8 +5,9 @@ if ! gem list foreman -i --silent; then
   gem install foreman
 fi
 
-# Default to port 3000 if not specified
-export PORT="${PORT:-3000}"
+# Default to a stable per-worktree port (main checkout: 3000; linked worktrees:
+# a port hashed from the worktree path). An explicit PORT still wins.
+export PORT="${PORT:-$("$(dirname "$0")"/dev-port)}"
 
 # Let the debug gem allow remote connections,
 # but avoid loading until `debugger` is called

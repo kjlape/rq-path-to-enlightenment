@@ -1,0 +1,27 @@
+#!/usr/bin/env sh
+# Print a stable, unique dev-server port for the current git worktree.
+#
+# The main checkout always gets 3000. Each linked worktree gets a port derived
+# from a hash of its own path (3001–3999), so every worktree has a consistent
+# port across sessions and two worktrees virtually never collide. Used as the
+# default PORT by bin/dev; override by exporting PORT explicitly.
+#
+#   PORT=3456 bin/dev      # explicit override wins
+#   bin/dev                # uses bin/dev-port for this worktree
+
+set -e
+
+main_git_dir="$(git rev-parse --git-common-dir)"
+current_git_dir="$(git rev-parse --git-dir)"
+
+if [ "$main_git_dir" = "$current_git_dir" ]; then
+  echo 3000
+  exit 0
+fi
+
+# Hash the worktree path into 3001-3999.
+worktree_path="$(git rev-parse --show-toplevel)"
+hash="$(printf '%s' "$worktree_path" | cksum | cut -d' ' -f1)"
+port=$((3001 + (hash % 999)))
+
+echo "$port"
