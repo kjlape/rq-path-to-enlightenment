@@ -2,8 +2,10 @@ one:
   method_name: MyString
   method_body: MyText
   minitest_test_class: one
+  position: 0
 
 two:
   method_name: MyString
   method_body: MyText
   minitest_test_class: two
+  position: 0
