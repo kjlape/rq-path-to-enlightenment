@@ -16,7 +16,7 @@ class Identity::PasswordResetsController < ApplicationController
       send_password_reset_email
       redirect_to sign_in_path, notice: "Check your email for reset instructions"
     else
-      redirect_to new_identity_password_reset_path, alert: UNVERIFIED_EMAIL_ALERT
+      redirect_to new_identity_password_reset_path(email: params[:email]), alert: UNVERIFIED_EMAIL_ALERT
     end
   end
 
