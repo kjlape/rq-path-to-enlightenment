@@ -3,6 +3,7 @@ require "test_helper"
 class JourneysControllerTest < ActionDispatch::IntegrationTest
   setup do
     @journey = journeys(:one)
+    sign_in_as users(:lazaro_nixon)
   end
 
   test "should get index" do

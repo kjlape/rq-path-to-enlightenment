@@ -2,6 +2,7 @@ require "test_helper"
 
 class ChallengeAnswersControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in_as users(:lazaro_nixon)
     @challenge_answer = challenge_answers(:one)
   end
 

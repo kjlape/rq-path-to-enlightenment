@@ -1,10 +1,11 @@
 class MinitestTestMethodsController < ApplicationController
   before_action :set_minitest_test_class, only: %i[index new create]
   before_action :set_minitest_test_method, only: %i[show edit update destroy]
+  before_action :set_parent_minitest_test_class, only: %i[edit update]
 
   # GET /minitest_test_methods or /minitest_test_methods.json
   def index
-    @minitest_test_methods = MinitestTestMethod.all
+    @minitest_test_methods = @minitest_test_class.minitest_test_methods
   end
 
   # GET /minitest_test_methods/1 or /minitest_test_methods/1.json
@@ -53,7 +54,7 @@ class MinitestTestMethodsController < ApplicationController
     @minitest_test_method.destroy!
 
     respond_to do |format|
-      format.html { redirect_to minitest_test_methods_url, notice: "Minitest test method was successfully destroyed." }
+      format.html { redirect_to minitest_test_class_url(@minitest_test_method.minitest_test_class), notice: "Minitest test method was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -63,6 +64,10 @@ class MinitestTestMethodsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_minitest_test_method
     @minitest_test_method = MinitestTestMethod.find(params[:id])
+  end
+
+  def set_parent_minitest_test_class
+    @minitest_test_class = @minitest_test_method.minitest_test_class
   end
 
   def set_minitest_test_class

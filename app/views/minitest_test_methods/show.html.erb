@@ -7,7 +7,7 @@
     <%= render @minitest_test_method %>
 
     <%= link_to "Edit this minitest test method", edit_minitest_test_method_path(@minitest_test_method), class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
-    <%= link_to "Back to minitest test methods", minitest_test_methods_path, class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
+    <%= link_to "Back to #{@minitest_test_method.minitest_test_class.class_name}", minitest_test_class_path(@minitest_test_method.minitest_test_class), class: "ml-2 rounded-lg py-3 px-5 bg-gray-100 inline-block font-medium" %>
     <div class="inline-block ml-2">
       <%= button_to "Destroy this minitest test method", @minitest_test_method, method: :delete, class: "mt-2 rounded-lg py-3 px-5 bg-gray-100 font-medium" %>
     </div>

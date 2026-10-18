@@ -2,6 +2,7 @@ require "test_helper"
 
 class MinitestTestClassesControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in_as users(:lazaro_nixon)
     @minitest_test_class = minitest_test_classes(:one)
   end
 

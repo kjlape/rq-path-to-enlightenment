@@ -2,6 +2,7 @@ class Challenge < ApplicationRecord
   belongs_to :journey
 
   delegated_type :challengeable, types: %w[MinitestTestClass MinitestTestMethod]
+  has_many :challenge_answers, dependent: :destroy
   validates :challengeable_type, presence: true, inclusion: {in: %w[MinitestTestClass MinitestTestMethod]}
   accepts_nested_attributes_for :challengeable
 

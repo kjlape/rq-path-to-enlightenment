@@ -2,25 +2,33 @@ require "test_helper"
 
 class ChallengesControllerTest < ActionDispatch::IntegrationTest
   setup do
+    sign_in_as users(:lazaro_nixon)
+    @journey = journeys(:one)
     @challenge = challenges(:one)
   end
 
   test "should get index" do
-    get challenges_url
+    get journey_challenges_url(@journey)
     assert_response :success
   end
 
   test "should get new" do
-    get new_challenge_url
+    get new_journey_challenge_url(@journey)
     assert_response :success
   end
 
   test "should create challenge" do
     assert_difference("Challenge.count") do
-      post challenges_url, params: {challenge: {challengeable_id: @challenge.challengeable_id, challengeable_type: @challenge.challengeable_type, description: @challenge.description, journey_id: @challenge.journey_id, position: @challenge.position, title: @challenge.title}}
+      post journey_challenges_url(@journey), params: {challenge: {
+        title: @challenge.title,
+        description: @challenge.description,
+        position: @challenge.position,
+        challengeable_type: "MinitestTestClass",
+        challengeable_attributes: {class_name: "SomeClass"}
+      }}
     end
 
-    assert_redirected_to challenge_url(Challenge.last)
+    assert_redirected_to journey_url(@journey)
   end
 
   test "should show challenge" do
@@ -34,8 +42,13 @@ class ChallengesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update challenge" do
-    patch challenge_url(@challenge), params: {challenge: {challengeable_id: @challenge.challengeable_id, challengeable_type: @challenge.challengeable_type, description: @challenge.description, journey_id: @challenge.journey_id, position: @challenge.position, title: @challenge.title}}
-    assert_redirected_to challenge_url(@challenge)
+    patch challenge_url(@challenge), params: {challenge: {
+      title: @challenge.title,
+      description: @challenge.description,
+      position: @challenge.position,
+      challengeable_type: "MinitestTestClass"
+    }}
+    assert_redirected_to journey_url(@journey)
   end
 
   test "should destroy challenge" do
@@ -43,6 +56,6 @@ class ChallengesControllerTest < ActionDispatch::IntegrationTest
       delete challenge_url(@challenge)
     end
 
-    assert_redirected_to challenges_url
+    assert_redirected_to journey_challenges_url(@journey)
   end
 end

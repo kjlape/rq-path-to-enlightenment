@@ -1,6 +1,7 @@
 class ChallengesController < ApplicationController
   before_action :set_journey, only: [:index, :new, :create]
   before_action :set_challenge, only: [:show, :edit, :update, :destroy]
+  before_action :set_journey_from_challenge, only: [:update, :destroy]
 
   def index
     @challenges = @journey.challenges.order(:position)
@@ -42,6 +43,10 @@ class ChallengesController < ApplicationController
   end
 
   private
+
+  def set_journey_from_challenge
+    @journey = @challenge.journey
+  end
 
   def set_journey
     @journey = Journey.find(params[:journey_id])
