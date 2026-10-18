@@ -16,7 +16,6 @@ class ChallengeAnswersTest < ApplicationSystemTestCase
 
     fill_in "Challenge", with: @challenge_answer.challenge_id
     fill_in "Submitted code", with: @challenge_answer.submitted_code
-    fill_in "User", with: @challenge_answer.user_id
     click_on "Create Challenge answer"
 
     assert_text "Challenge answer was successfully created"
@@ -29,7 +28,6 @@ class ChallengeAnswersTest < ApplicationSystemTestCase
 
     fill_in "Challenge", with: @challenge_answer.challenge_id
     fill_in "Submitted code", with: @challenge_answer.submitted_code
-    fill_in "User", with: @challenge_answer.user_id
     click_on "Update Challenge answer"
 
     assert_text "Challenge answer was successfully updated"

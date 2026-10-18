@@ -21,7 +21,7 @@ class ChallengeAnswersController < ApplicationController
 
   # POST /challenge_answers or /challenge_answers.json
   def create
-    @challenge_answer = ChallengeAnswer.new(challenge_answer_params)
+    @challenge_answer = Current.user.challenge_answers.new(challenge_answer_params)
 
     respond_to do |format|
       if @challenge_answer.save
@@ -64,8 +64,9 @@ class ChallengeAnswersController < ApplicationController
     @challenge_answer = ChallengeAnswer.find(params[:id])
   end
 
-  # Only allow a list of trusted parameters through.
+  # Only allow a list of trusted parameters through. The user is set from the
+  # current session, never from params.
   def challenge_answer_params
-    params.require(:challenge_answer).permit(:user_id, :challenge_id, :submitted_code)
+    params.require(:challenge_answer).permit(:challenge_id, :submitted_code)
   end
 end
