@@ -6,6 +6,9 @@ How to run a full QA pass on this app: setup, driving it with a real browser, kn
 
 ```bash
 bin/rails db:prepare                                  # set up / migrate dev DB
+bin/rails tailwindcss:build                           # generate app/assets/builds/tailwind.css if missing —
+                                                      # without it every layout render 500s with
+                                                      # "The asset 'tailwind.css' was not found in the load path"
 nohup bin/rails server -p 3000 > tmp/qa-server.log 2>&1 &
 curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/up   # expect 200
 ```
@@ -122,7 +125,8 @@ Rules of thumb:
 - `bugs/001` — No content authorization: any user can read/edit/destroy any content.
 - `bugs/002` — Challenge answering unreachable from the UI; completion = any answer exists.
 - `bugs/003` — Raw scaffold pages across journeys/challenges/answers/sessions.
-- `bugs/004` — Email verification dead end blocks password reset in dev.
-- `bugs/005` — Empty test class shows ✅ pass.
-- `bugs/006` — Code edits in the Tests editor are never persisted.
-- `bugs/007` — No loading feedback on first WASM Run.
+- `bugs/011` — "Method created" flash swallowed by Turbo Frame (silent success).
+- `bugs/012` — Signed-out resend-verification endpoint is not rate-limited (abuse vector pre-production).
+- `bugs/013` — Test-class parser rejects `?`/`!`/`=`-suffixed test method names.
+
+Fixed and archived: `bugs/004`–`010` (see `bugs/archived/`).

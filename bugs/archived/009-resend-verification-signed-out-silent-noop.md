@@ -1,6 +1,6 @@
 # Bug: Resend-verification from the signed-out reset page silently no-ops for unknown emails
 
-**Status:** Open
+**Status:** Fixed (2026-10-18 — fixed in parallel-worktree workflow; see merge commits on master)
 **Severity:** Low (edge case, anti-enumeration tradeoff)
 **Triage:** Actionable — small UX fix; preserve the anti-enumeration behavior, just make the button's outcome honest.
 **Found:** 2026-10-18, reviewer finding during the bug 004 fix

@@ -1,6 +1,6 @@
 # Bug: System test suite fails at baseline — 5 failures, 23 errors on a clean tree
 
-**Status:** Open
+**Status:** Fixed (2026-10-18 — fixed in parallel-worktree workflow; see merge commits on master)
 **Severity:** Medium (CI/test-hygiene; the app itself works, the tests don't)
 **Triage:** Actionable — mechanical selector/auth drift; no product decisions needed.
 **Found:** 2026-10-18, during the bugs 004–007 fix workflow (three independent agents each confirmed it on the unmodified base commit)
